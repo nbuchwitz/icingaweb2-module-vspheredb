@@ -47,9 +47,9 @@ class ChooseDbResourceForm extends BaseForm
         }
         if ($resourceName = $this->getResourceName()) {
             $resourceConfig = ResourceFactory::getResourceConfig($resourceName);
-            if (! isset($resourceConfig->charset)
-                || $resourceConfig->charset !== 'utf8mb4'
-            ) {
+            if ($resourceConfig->db === 'mysql' && (!isset($resourceConfig->charset)
+                    || $resourceConfig->charset !== 'utf8mb4'
+                )) {
                 $this->getElement('resource')
                     ->addError('Please change the encoding for the database to utf8mb4');
             }
@@ -96,7 +96,7 @@ class ChooseDbResourceForm extends BaseForm
 
         if (empty($resources)) {
             $this->addHint(Html::sprintf(
-                $this->translate('Please click %s to create new MySQL/MariaDB resource'),
+                $this->translate('Please click %s to create new MySQL/MariaDB or PostgreSQL resource'),
                 Link::create(
                     $this->translate('here'),
                     'config/resource',
@@ -224,7 +224,7 @@ class ChooseDbResourceForm extends BaseForm
     {
         // return [];
         $resources = [];
-        $allowed = ['mysql'];
+        $allowed = ['mysql','pgsql'];
 
         foreach (ResourceFactory::getResourceConfigs() as $name => $resource) {
             if ($resource->get('type') === 'db' && in_array($resource->get('db'), $allowed)) {
