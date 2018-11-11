@@ -231,7 +231,7 @@ CREATE TABLE vspheredb_daemon (
   username VARCHAR(64) NOT NULL,
   pid BIGINT NOT NULL,
   php_version VARCHAR(64) NOT NULL,
-  ts_last_refresh NUMERIC(20) NOT NULL,
+  ts_last_refresh BIGINT NOT NULL,
   process_info TEXT NOT NULL,
   PRIMARY KEY (instance_uuid)
 );
@@ -240,7 +240,7 @@ CREATE TABLE vspheredb_daemon (
 CREATE TABLE vspheredb_daemonlog (
   vcenter_uuid bytea CHECK(LENGTH(vcenter_uuid) = 16) NOT NULL,
   instance_uuid bytea CHECK(LENGTH(instance_uuid) = 16) NOT NULL,
-  ts_create NUMERIC(20) NOT NULL,
+  ts_create BIGINT NOT NULL,
   level enum_loglevel NOT NULL,
   message TEXT NOT NULL
 );
@@ -423,9 +423,9 @@ CREATE TABLE datastore (
   vcenter_uuid bytea CHECK(LENGTH(vcenter_uuid) = 16) NOT NULL,
   maintenance_mode enum_maintenance_mode DEFAULT NULL,
   is_accessible enum_boolean NOT NULL,
-  capacity NUMERIC(20) DEFAULT NULL,
-  free_space NUMERIC(20) DEFAULT NULL,
-  uncommitted NUMERIC(20) DEFAULT NULL,
+  capacity BIGINT DEFAULT NULL,
+  free_space BIGINT DEFAULT NULL,
+  uncommitted BIGINT DEFAULT NULL,
   multiple_host_access enum_boolean DEFAULT NULL,
   -- datastore_type ENUM(
   --     'vmfs', -- VMFS??
@@ -456,9 +456,9 @@ CREATE TABLE vm_datastore_usage (
   vm_uuid bytea NOT NULL CHECK(LENGTH(vm_uuid) = 20),
   datastore_uuid  bytea NOT NULL CHECK(LENGTH(datastore_uuid) = 20),
   vcenter_uuid bytea CHECK(LENGTH(vcenter_uuid) = 16) NOT NULL,
-  committed NUMERIC(20) DEFAULT NULL,
-  uncommitted NUMERIC(20) DEFAULT NULL,
-  unshared NUMERIC(20) DEFAULT NULL,
+  committed BIGINT DEFAULT NULL,
+  uncommitted BIGINT DEFAULT NULL,
+  unshared BIGINT DEFAULT NULL,
   PRIMARY KEY(vm_uuid, datastore_uuid)
 );
 
@@ -484,7 +484,7 @@ CREATE TABLE vm_disk (
   disk_uuid bytea CHECK(disk_uuid is null or LENGTH(disk_uuid) = 16) DEFAULT NULL, -- backing->uuid: 6000C272-5a6b-ca2f-1706-4d2493ba11f0
   datastore_uuid bytea DEFAULT NULL CHECK(datastore_uuid IS NULL OR LENGTH(datastore_uuid) = 20), -- backing->datastore->_
   file_name VARCHAR(255) DEFAULT NULL, -- backing->fileName: [DSNAME] <name>/<name>.vmdk
-  capacity NUMERIC(20) DEFAULT NULL, -- capacityInBytes
+  capacity BIGINT DEFAULT NULL, -- capacityInBytes
   disk_mode enum_disk_mode NOT NULL, -- backing->diskMode
   split enum_boolean DEFAULT NULL, --  Flag to indicate the type of virtual disk file: split or monolithic.
                                   -- If true, the virtual disk is stored in multiple files, each 2GB.
@@ -536,7 +536,7 @@ CREATE INDEX host_quick_stats_vcenter_uuid_idx on host_quick_stats(vcenter_uuid)
 CREATE TABLE vm_quick_stats (
   uuid bytea NOT NULL CHECK(LENGTH(uuid) = 20),
   ballooned_memory_mb BIGINT DEFAULT NULL,
-  compressed_memory_kb NUMERIC(20) DEFAULT NULL,
+  compressed_memory_kb BIGINT DEFAULT NULL,
   consumed_overhead_memory_mb BIGINT DEFAULT NULL,
   distributed_cpu_entitlement BIGINT DEFAULT NULL, -- mhz
   distributed_memory_entitlement_mb BIGINT DEFAULT NULL,
@@ -565,8 +565,8 @@ CREATE TABLE alarm_history (
   vcenter_uuid bytea CHECK(LENGTH(vcenter_uuid) = 16) NOT NULL,
   ts_event_ms BIGINT NOT NULL,
   event_type enum_alarm_type NOT NULL,
-  event_key NUMERIC(20) NOT NULL,
-  event_chain_id NUMERIC(20) NOT NULL,
+  event_key BIGINT NOT NULL,
+  event_chain_id BIGINT NOT NULL,
   entity_uuid bytea DEFAULT NULL CHECK(entity_uuid IS NULL OR LENGTH(entity_uuid) = 20),
   source_uuid bytea DEFAULT NULL CHECK(source_uuid IS NULL OR LENGTH(source_uuid) = 20),
   alarm_name VARCHAR(255) DEFAULT NULL,
@@ -586,8 +586,8 @@ CREATE TABLE vm_event_history (
   vcenter_uuid bytea CHECK(LENGTH(vcenter_uuid) = 16) NOT NULL,
   ts_event_ms BIGINT NOT NULL,
   event_type enum_event_type NOT NULL,
-  event_key NUMERIC(20) NOT NULL,
-  event_chain_id NUMERIC(20) NOT NULL,
+  event_key BIGINT NOT NULL,
+  event_chain_id BIGINT NOT NULL,
   is_template enum_boolean DEFAULT NULL,
   datacenter_uuid bytea DEFAULT NULL CHECK(datacenter_uuid IS NULL OR LENGTH(datacenter_uuid) = 20),
   compute_resource_uuid bytea DEFAULT NULL CHECK(compute_resource_uuid IS NULL OR LENGTH(compute_resource_uuid) = 20),
@@ -704,12 +704,12 @@ CREATE INDEX counter_300x5_vcenter_uuid ON counter_300x5(vcenter_uuid);
 
 -- Not yet:
 -- CREATE TABLE vm_triggered_alarm (
---   id NUMERIC(20) NOT NULL,
+--   id BIGINT NOT NULL,
 --   object_id BIGINT NOT NULL,
 -- );
 
 -- CREATE TABLE vm_alarm_history (
---   vm_id NUMERIC(20) AUTO_INCREMENT NOT NULL,
+--   vm_id BIGINT AUTO_INCREMENT NOT NULL,
 -- );
 
 
